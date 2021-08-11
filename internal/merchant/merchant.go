@@ -1,5 +1,11 @@
 package merchant
 
-type MerchantEntity struct{}
+type Merchant struct {
+	ID          string
+	Name        string
+	Description string
+	Address     string
+	PhoneNumber string
+}
 
-type Merchant interface{}
+type MerchantService interface{}

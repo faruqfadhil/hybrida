@@ -14,17 +14,37 @@ type CreateProductRequest struct {
 	MerchantID   string
 }
 
-type ProductEntity struct {
+type Product struct {
 	ID           string
 	Name         string
 	ThumbnailURL string
 	Description  string
 	Price        int
-	MerchantInfo *merchant.MerchantEntity
+	MerchantInfo *merchant.Merchant
 }
 
-type Product interface {
-	CreateProduct(ctx context.Context, req *CreateProductRequest) (*ProductEntity, error)
-	GetProductList(ctx context.Context, name string) ([]*ProductEntity, error)
-	GetProductDetail(ctx context.Context, id string) (*ProductEntity, error)
+type ProductService interface {
+	CreateProduct(ctx context.Context, req *CreateProductRequest) (*Product, error)
+	GetProductList(ctx context.Context, name string) ([]*Product, error)
+	GetProductDetail(ctx context.Context, id string) (*Product, error)
+}
+
+type productService struct {
+	repo Repository
+}
+
+func NewProductService(repo Repository) ProductService {
+	return &productService{
+		repo: repo,
+	}
+}
+
+func (s *productService) CreateProduct(ctx context.Context, req *CreateProductRequest) (*Product, error) {
+	return nil, nil
+}
+func (s *productService) GetProductList(ctx context.Context, name string) ([]*Product, error) {
+	return nil, nil
+}
+func (s *productService) GetProductDetail(ctx context.Context, id string) (*Product, error) {
+	return nil, nil
 }
