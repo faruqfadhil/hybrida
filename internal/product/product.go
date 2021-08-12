@@ -38,12 +38,14 @@ type ProductService interface {
 }
 
 type productService struct {
-	repo Repository
+	repo        Repository
+	merchantSvc merchant.MerchantService
 }
 
-func NewProductService(repo Repository) ProductService {
+func NewProductService(repo Repository, merchantSvc merchant.MerchantService) ProductService {
 	return &productService{
-		repo: repo,
+		repo:        repo,
+		merchantSvc: merchantSvc,
 	}
 }
 
@@ -56,6 +58,31 @@ func (s *productService) GetProductList(ctx context.Context, name string) (*Prod
 	if err != nil {
 		return nil, err
 	}
+
+	merchantIDs := []string{}
+	productsMapByMerchantID := map[string][]*Product{}
+	for _, p := range products {
+		merchantIDs = append(merchantIDs, p.MerchantInfo.ID)
+		productsMapByMerchantID[p.MerchantInfo.ID] = append(productsMapByMerchantID[p.MerchantInfo.ID], p)
+	}
+
+	if len(merchantIDs) > 0 {
+		merchants, err := s.merchantSvc.GetMerchantByIDs(ctx, merchantIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, m := range merchants {
+			if _, ok := productsMapByMerchantID[m.ID]; !ok {
+				continue
+			}
+
+			for _, p := range productsMapByMerchantID[m.ID] {
+				p.MerchantInfo = m
+			}
+		}
+	}
+
 	return &ProductList{
 		Products: products,
 	}, nil
@@ -65,6 +92,13 @@ func (s *productService) GetProductDetail(ctx context.Context, id string) (*Prod
 	if err != nil {
 		return nil, err
 	}
+
+	merchantInfo, err := s.merchantSvc.GetMerchantByID(ctx, product.MerchantInfo.ID)
+	if err != nil {
+		return nil, err
+	}
+	product.MerchantInfo = merchantInfo
+
 	return &ProductDetail{
 		Product: product,
 	}, nil
