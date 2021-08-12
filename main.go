@@ -40,4 +40,5 @@ func main() {
 func initRouterV1(r *gin.Engine, productHandler productHandler.ProductHandler) {
 	v1Router := r.Group("api/v1")
 	v1Router.GET("/products", productHandler.GetListProduct)
+	v1Router.GET("/product", productHandler.GetProductDetail)
 }

@@ -48,6 +48,7 @@ func NewProductService(repo Repository) ProductService {
 }
 
 func (s *productService) CreateProduct(ctx context.Context, req *CreateProductRequest) (*Product, error) {
+	// return s.repo.Create(ctx, req)
 	return nil, nil
 }
 func (s *productService) GetProductList(ctx context.Context, name string) (*ProductList, error) {
@@ -60,5 +61,11 @@ func (s *productService) GetProductList(ctx context.Context, name string) (*Prod
 	}, nil
 }
 func (s *productService) GetProductDetail(ctx context.Context, id string) (*ProductDetail, error) {
-	return nil, nil
+	product, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &ProductDetail{
+		Product: product,
+	}, nil
 }

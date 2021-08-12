@@ -41,4 +41,18 @@ func (h *productHandler) GetListProduct(c *gin.Context) {
 
 	response.Success(c, products, "success")
 }
-func (h *productHandler) GetProductDetail(c *gin.Context) {}
+func (h *productHandler) GetProductDetail(c *gin.Context) {
+	var id string
+	id, ok := c.GetQuery("id")
+	if !ok {
+		response.Error(c, http.StatusBadRequest, "id required")
+		return
+	}
+	product, err := h.svc.GetProductDetail(context.Background(), id)
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.Success(c, product, "success")
+}
